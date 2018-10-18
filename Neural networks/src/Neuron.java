@@ -4,34 +4,34 @@ import java.util.Random;
 public class Neuron {
 	
   public float threshold = 2; 
-  public static float currVal = 0; 
+  public float currVal = 0; 
   public int neuronId;
 //  
 //  Neuron() {
 //	  neuronId++;
 //  }
   
-  float activation(float inp) {
+  Boolean activation(float inp) {
     
-    float out = 0;
-    float act = inp + Neuron.currVal;
+    Boolean out = false;
+    float act = inp + currVal;
     
     // if act is less than threshold, there will be no output from neuron
     if(act < threshold) {
       
-      out  = 0;   
-      Neuron.currVal = act;
+      out  = false;   
+      currVal = act;
     }
     else {
-      out = 1;
-      Neuron.currVal = 0;
+      out = true;
+      currVal = 0;
     }
     
 //    System.out.println("out is:"+out );
     return out;
   }
   
-  public static void main (String[] args) {
+  /*public static void main (String[] args) {
     
     Neuron n = new Neuron();
     
@@ -62,7 +62,7 @@ public class Neuron {
     System.out.println(input);
     System.out.println(output);
         
-  }
+  }*/
 }
 
 

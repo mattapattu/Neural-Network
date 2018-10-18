@@ -115,10 +115,10 @@ public class Neuroncluster {
 		return jgraph.vertexSet();
 	}
 
-	public void getMembranePotentials( ArrayList<Float> currMembranePotentials) {
+	public ArrayList<ArrayList<Integer>> getAllGraphs( ) {
 
-		Integer source = tsort.get(0);
-		int dest = tsort.get(tsort.size()-1);
+		//Get all sources and destinations
+
 
 		List<Integer> noIncoming = new ArrayList<Integer>();
 		List<Integer> noOutgoing = new ArrayList<Integer>();
@@ -135,6 +135,7 @@ public class Neuroncluster {
 		}
 		ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
 
+		//find the list of all graphs
 		for(int k=0;k<noIncoming.size();k++) {
 			for(int m=0;m<noOutgoing.size();m++) {
 				try {
@@ -144,24 +145,44 @@ public class Neuroncluster {
 						System.out.println(i.getVertexList().toString());
 						arr.add((ArrayList<Integer>) i.getVertexList());
 					}
-					
+
 				}catch(IllegalArgumentException e ) {
 					System.out.println(e.getMessage());
 				}
 			}
 		}
-		
+		return arr;
+
+		/*//For each graph, check if last neuron is activated
 		for(ArrayList<Integer> arraylist:arr) {
-			
-			double mem_pot = arraylist.get(0);
-			
+
+			double currVal = 0;   
+
 			for(int i=0;i<(arraylist.size()-1);i++) {
 				DefaultWeightedEdge e = jgraph.getEdge(i, i+1);
 				double weight = jgraph.getEdgeWeight(e);
-				
-			}
-		}
 
+				double act = input + currVal;
+
+			    // if act is less than threshold, there will be no output from neuron
+			    if(act < 2) {
+			      currVal = act;
+			    }
+			    else {
+
+			     currVal = 0;
+			    }
+
+
+			}*/
+	}
+
+	public double getEdgeWeight(int sourceVertex,int targetVertex) {
+//		System.out.println("Get weight of edge b/w "+sourceVertex+","+targetVertex);
+		DefaultWeightedEdge e = jgraph.getEdge(sourceVertex, targetVertex);
+		double weight = jgraph.getEdgeWeight(e);
+
+		return weight;
 	}
 
 	private List<GraphPath<Integer, DefaultWeightedEdge>> getKshortestPaths(Integer source, Integer destination) {
@@ -189,7 +210,6 @@ public class Neuroncluster {
 
 	public static void main(String[]args) {
 		Neuroncluster n = new Neuroncluster(5);
-		Set<Integer> vertices = n.getVertices();
 		Neuron [] neurons = new Neuron[5];
 		for(int i=0;i<neurons.length;i++) {
 			neurons[i] = new Neuron();
@@ -201,28 +221,52 @@ public class Neuroncluster {
 		ArrayList<Float> input = new ArrayList<Float>();
 		ArrayList<Float> output = new ArrayList<Float>();
 
-		n.getMembranePotentials(input);
-		/*for (int i=0; i<100; i++)
-		{
-			float r;
-			float x = (float) Math.random();
-			//		    	System.out.println("x is:"+x );
-			if(x < 0.5) {
-				r=(float)0.0;
-				input.add(r);
+		ArrayList<ArrayList<Integer>>graphs = n.getAllGraphs();
+
+		//For each graph, check if last neuron is activated
+		for(ArrayList<Integer> arraylist:graphs) {
+
+			//For each graph, generate 100 bin inputs
+			for (int j=0; j<100; j++)
+			{
+				float r;
+				float x = (float) Math.random();
+				//				    	System.out.println("x is:"+x );
+				if(x < 0.5) {
+					r=(float)0.0;
+					input.add(r);
 
 
-			} else {
-				r=(float) 1.0;
-				input.add(r);
+				} else {
+					r=(float) 1.0;
+					input.add(r);
+
+				}
+				Boolean graphActivated = false;
+				//For jth input, verify that last neuron of graph is activated
+				for(int i=0;i<arraylist.size();i++) {
+
+					if(neurons[i].activation(r)) {
+						graphActivated = true;
+					}else {
+						graphActivated = false;
+						break;
+					}
+					//If current neuron is activated, send a signal weight*neurons[i].currVal to next neuron
+					if(i<(arraylist.size()-1)) {
+						double weight = n.getEdgeWeight(arraylist.get(i),arraylist.get(i+1));
+						neurons[i+1].currVal= neurons[i+1].currVal+ (float) weight*neurons[i].currVal;
+					}
+				}
+				if(graphActivated) {
+					System.out.println("Graph:"+arraylist.toString()+"is activated for "+ j+"th input" );
+				}
 
 			}
-			//		    	System.out.println("r is:"+r );
-			float Y = neuron.activation(r);
-			output.add(Y);
-		}*/
 
+		}
 	}
+
 }
 
 
