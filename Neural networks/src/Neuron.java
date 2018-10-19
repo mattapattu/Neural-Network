@@ -3,13 +3,13 @@ import java.util.Random;
 
 public class Neuron {
 	
-  public float threshold = 2; 
+  public float threshold; 
   public float currVal = 0; 
   public int neuronId;
 //  
-//  Neuron() {
-//	  neuronId++;
-//  }
+  Neuron(int thold) {
+	  threshold = thold;
+  }
   
   Boolean activation(float inp) {
     

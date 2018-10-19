@@ -89,7 +89,7 @@ public class Neuroncluster {
 		JFrame frame = new JFrame("NewGraph");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(460, 400);
-		 
+
 
 
 
@@ -97,17 +97,17 @@ public class Neuroncluster {
 				new JGraphXAdapter<Integer, DefaultWeightedEdge>(jgraph);
 
 		mxIGraphLayout layout = new mxCircleLayout(graphAdapter,2.00);
-		
+
 		layout.execute(graphAdapter.getDefaultParent());
 
 		frame.add(new mxGraphComponent(graphAdapter));
 
 		frame.setSize(1600, 1800);
-//		frame.pack();
+		//		frame.pack();
 		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
-		
-		
+
+
 		Iterator<Integer> iter = new DepthFirstIterator<>(jgraph);
 		while (iter.hasNext()) {
 			Integer vertex = iter.next();
@@ -161,6 +161,10 @@ public class Neuroncluster {
 				noOutgoing.add(tsort.get(i));
 			}
 		}
+		System.out.println("Source neurons are :"+noIncoming.toString());
+
+		System.out.println("Destination neurons are :"+noOutgoing.toString());
+
 		ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
 
 		//find the list of all graphs
@@ -181,11 +185,11 @@ public class Neuroncluster {
 		}
 		return arr;
 
-		
+
 	}
 
 	public double getEdgeWeight(int sourceVertex,int targetVertex) {
-//		System.out.println("Get weight of edge b/w "+sourceVertex+","+targetVertex);
+		//		System.out.println("Get weight of edge b/w "+sourceVertex+","+targetVertex);
 		DefaultWeightedEdge e = jgraph.getEdge(sourceVertex, targetVertex);
 		double weight = jgraph.getEdgeWeight(e);
 
@@ -213,40 +217,58 @@ public class Neuroncluster {
 	// Use topological sort to determine activation path
 
 	public static void main(String[]args) {
+		//Neuroncluster(number of neurons, number of links in the graph)
 		Neuroncluster n = new Neuroncluster(10,20);
+
 		Neuron [] neurons = new Neuron[10];
 		for(int i=0;i<neurons.length;i++) {
-			neurons[i] = new Neuron();
+
+			//Neurons( int threshold)
+			neurons[i] = new Neuron(2);
 			neurons[i].neuronId=i;
 		}
 		List<Integer> sorted = n.tsort;
 
-
 		ArrayList<Float> input = new ArrayList<Float>();
-//		ArrayList<Float> output = new ArrayList<Float>();
+
+		//		ArrayList<Float> output = new ArrayList<Float>();
+
 
 		ArrayList<ArrayList<Integer>>graphs = n.getAllGraphs();
+		for (int j=0; j<100; j++)
+		{
+			float r;
+			float x = (float) Math.random();
+			//				    	System.out.println("x is:"+x );
+			if(x < 0.5) {
+				r=(float)0.0;
+				input.add(r);
+
+
+			} else {
+				r=(float) 1.0;
+				input.add(r);
+
+			}
+		}
+		System.out.println("Inputs send to source neurons is:"+input+"\n\n");
 
 		//For each graph, check if last neuron is activated
 		for(ArrayList<Integer> arraylist:graphs) {
 
+			int countActivated = 0;
+
+			ArrayList<Integer> prevPath = new ArrayList<>();
+			double finalweightofpath = 0.0; 
+
 			//For each graph, generate 100 bin inputs
 			for (int j=0; j<100; j++)
 			{
-				float r;
-				float x = (float) Math.random();
-				//				    	System.out.println("x is:"+x );
-				if(x < 0.5) {
-					r=(float)0.0;
-					input.add(r);
 
-
-				} else {
-					r=(float) 1.0;
-					input.add(r);
-
-				}
+				float r = input.get(j);
 				Boolean graphActivated = false;
+				double weightOfPath = 0.0;
+
 				//For jth input, verify that last neuron of graph is activated
 				for(int i=0;i<arraylist.size();i++) {
 
@@ -259,16 +281,39 @@ public class Neuroncluster {
 					//If current neuron is activated, send a signal weight*neurons[i].currVal to next neuron
 					if(i<(arraylist.size()-1)) {
 						double weight = n.getEdgeWeight(arraylist.get(i),arraylist.get(i+1));
+						weightOfPath = weightOfPath+weight;
 						neurons[i+1].currVal= neurons[i+1].currVal+ (float) weight*neurons[i].currVal;
 					}
 				}
+				if(prevPath.isEmpty()) {
+					prevPath.addAll(arraylist);
+
+				}
 				if(graphActivated) {
-					System.out.println("Path:"+arraylist.toString()+"is activated for "+ j+"th input" );
+					countActivated++;
+					finalweightofpath = weightOfPath;
+					graphActivated=false;
+					System.out.println("Path of weightOfPath :"+weightOfPath+" ,"+arraylist.toString()+"is activated for "+ j+"th binary input" );
+				}else {
+					finalweightofpath = 0;
+					for(int i=0;i<arraylist.size();i++) {
+						if(i<(arraylist.size()-1)) {
+							double weight = n.getEdgeWeight(arraylist.get(i),arraylist.get(i+1));
+							weightOfPath = weightOfPath+weight;
+						}
+					}
+					finalweightofpath = weightOfPath;
 				}
 
+
 			}
+			System.out.println("Path of total weight: "+finalweightofpath+", "+prevPath+"\n was activated "+countActivated+" times for 100 random inputs\n\n#######");
+			prevPath = new ArrayList<>();
+
+			//			System.out.println(input);
 
 		}
+
 	}
 
 }
