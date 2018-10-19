@@ -18,6 +18,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.alg.shortestpath.KShortestSimplePaths;
+import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.generate.CompleteGraphGenerator;
 import org.jgrapht.generate.GnmRandomGraphGenerator;
 import org.jgrapht.generate.GraphGenerator;
@@ -30,6 +31,10 @@ import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jgrapht.util.SupplierUtil;
+
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.swing.mxGraphComponent;
 
 public class Neuroncluster {
 
@@ -69,6 +74,7 @@ public class Neuroncluster {
 
 		//		SimpleWeightedGraphMatrixGenerator<String, DefaultWeightedEdge> completeGenerator =
 		//	            new SimpleWeightedGraphMatrixGenerator();
+		System.out.println("Generating a neuron network with 10 neurons and 20 edges:\n");
 		GraphGenerator<Integer, DefaultWeightedEdge, Integer> gen = new GnmRandomGraphGenerator<>(n, numEdges);
 
 
@@ -80,6 +86,28 @@ public class Neuroncluster {
 			jgraph.setEdgeWeight(e, (double) GENERATOR.nextDouble());
 		}
 
+		JFrame frame = new JFrame("NewGraph");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(460, 400);
+		 
+
+
+
+		JGraphXAdapter<Integer, DefaultWeightedEdge> graphAdapter = 
+				new JGraphXAdapter<Integer, DefaultWeightedEdge>(jgraph);
+
+		mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
+		
+		layout.execute(graphAdapter.getDefaultParent());
+
+		frame.add(new mxGraphComponent(graphAdapter));
+
+		frame.setSize(1600, 1800);
+//		frame.pack();
+		frame.setLocationByPlatform(true);
+		frame.setVisible(true);
+		
+		
 		Iterator<Integer> iter = new DepthFirstIterator<>(jgraph);
 		while (iter.hasNext()) {
 			Integer vertex = iter.next();
@@ -176,8 +204,6 @@ public class Neuroncluster {
 		return paths;	
 
 	}
-
-
 
 
 
