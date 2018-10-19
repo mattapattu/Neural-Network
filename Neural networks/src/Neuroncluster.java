@@ -143,7 +143,7 @@ public class Neuroncluster {
 		return jgraph.vertexSet();
 	}
 
-	public ArrayList<ArrayList<Integer>> getAllGraphs( ) {
+	public ArrayList<Neuralpath> getAllGraphs( ) {
 
 		//Get all sources and destinations
 
@@ -165,7 +165,7 @@ public class Neuroncluster {
 
 		System.out.println("Destination neurons are :"+noOutgoing.toString());
 
-		ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Neuralpath> arr = new ArrayList<Neuralpath>();
 
 		//find the list of all graphs
 		for(int k=0;k<noIncoming.size();k++) {
@@ -175,7 +175,8 @@ public class Neuroncluster {
 					List<GraphPath<Integer, DefaultWeightedEdge>> paths = getKshortestPaths(noIncoming.get(k),noOutgoing.get(m));
 					for(GraphPath i:paths) {
 						System.out.println(i.getVertexList().toString());
-						arr.add((ArrayList<Integer>) i.getVertexList());
+						Neuralpath n = new Neuralpath((ArrayList<Integer>)i.getVertexList());
+						arr.add(n);
 					}
 
 				}catch(IllegalArgumentException e ) {
@@ -221,20 +222,24 @@ public class Neuroncluster {
 		Neuroncluster n = new Neuroncluster(10,20);
 
 		Neuron [] neurons = new Neuron[10];
+
+		ArrayList<Neuralpath>graphs = n.getAllGraphs();
+
 		for(int i=0;i<neurons.length;i++) {
 
 			//Neurons( int threshold)
 			neurons[i] = new Neuron(2);
 			neurons[i].neuronId=i;
+			neurons[i].setNeuralpaths(graphs);
 		}
-		List<Integer> sorted = n.tsort;
+		//		List<Integer> sorted = n.tsort;
 
 		ArrayList<Float> input = new ArrayList<Float>();
 
 		//		ArrayList<Float> output = new ArrayList<Float>();
 
 
-		ArrayList<ArrayList<Integer>>graphs = n.getAllGraphs();
+
 		for (int j=0; j<100; j++)
 		{
 			float r;
@@ -254,7 +259,7 @@ public class Neuroncluster {
 		System.out.println("Inputs send to source neurons is:"+input+"\n\n");
 
 		//For each graph, check if last neuron is activated
-		for(ArrayList<Integer> arraylist:graphs) {
+		for(Neuralpath neuralpath:graphs) {
 
 			int countActivated = 0;
 
@@ -270,35 +275,37 @@ public class Neuroncluster {
 				double weightOfPath = 0.0;
 
 				//For jth input, verify that last neuron of graph is activated
-				for(int i=0;i<arraylist.size();i++) {
-
-					if(neurons[i].activation(r)) {
-						graphActivated = true;
-					}else {
-						graphActivated = false;
-						break;
-					}
-					//If current neuron is activated, send a signal weight*neurons[i].currVal to next neuron
-					if(i<(arraylist.size()-1)) {
-						double weight = n.getEdgeWeight(arraylist.get(i),arraylist.get(i+1));
-						weightOfPath = weightOfPath+weight;
-						neurons[i+1].currVal= neurons[i+1].currVal+ (float) weight*neurons[i].currVal;
+				for(int i=0;i<neuralpath.pathOfNeurons.size();i++) {
+					if(neuralpath.pathActivated) {
+						if(neurons[i].activation(r)) {
+							neurons[i].disableOtherPaths(neuralpath);
+							graphActivated = true;
+						}else {
+							graphActivated = false;
+							break;
+						}
+						//If current neuron is activated, send a signal weight*neurons[i].currVal to next neuron
+						if(i<(neuralpath.pathOfNeurons.size()-1)) {
+							double weight = n.getEdgeWeight(neuralpath.pathOfNeurons.get(i),neuralpath.pathOfNeurons.get(i+1));
+							weightOfPath = weightOfPath+weight;
+							neurons[i+1].currVal= neurons[i+1].currVal+ (float) weight*neurons[i].currVal;
+						}
 					}
 				}
 				if(prevPath.isEmpty()) {
-					prevPath.addAll(arraylist);
+					prevPath.addAll(neuralpath.pathOfNeurons);
 
 				}
 				if(graphActivated) {
 					countActivated++;
 					finalweightofpath = weightOfPath;
 					graphActivated=false;
-					System.out.println("Path of weightOfPath :"+weightOfPath+" ,"+arraylist.toString()+"is activated for "+ j+"th binary input" );
+					System.out.println("Path of weightOfPath :"+weightOfPath+" ,"+neuralpath.pathOfNeurons.toString()+"is activated for "+ j+"th binary input" );
 				}else {
 					finalweightofpath = 0;
-					for(int i=0;i<arraylist.size();i++) {
-						if(i<(arraylist.size()-1)) {
-							double weight = n.getEdgeWeight(arraylist.get(i),arraylist.get(i+1));
+					for(int i=0;i<neuralpath.pathOfNeurons.size();i++) {
+						if(i<(neuralpath.pathOfNeurons.size()-1)) {
+							double weight = n.getEdgeWeight(neuralpath.pathOfNeurons.get(i),neuralpath.pathOfNeurons.get(i+1));
 							weightOfPath = weightOfPath+weight;
 						}
 					}

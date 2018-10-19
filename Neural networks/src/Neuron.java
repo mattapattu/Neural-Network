@@ -6,6 +6,8 @@ public class Neuron {
   public float threshold; 
   public float currVal = 0; 
   public int neuronId;
+  //All neuralpaths that contain neuronId
+  public ArrayList<Neuralpath> neuralpaths = new ArrayList<>();
 //  
   Neuron(int thold) {
 	  threshold = thold;
@@ -29,6 +31,23 @@ public class Neuron {
     
 //    System.out.println("out is:"+out );
     return out;
+  }
+  
+  public void setNeuralpaths(ArrayList<Neuralpath> allNeuralPaths) {
+	  for(Neuralpath i:allNeuralPaths) {
+		  if(i.pathOfNeurons.contains(neuronId)){
+			  neuralpaths.add(i);
+		  }
+	  }
+  }
+  
+  public void disableOtherPaths(Neuralpath neuralpath) {
+	  for(Neuralpath n:neuralpaths) {
+		  if(n.pathId!=neuralpath.pathId) {
+			  n.pathActivated=false;
+		  }
+		  
+	  }
   }
   
   /*public static void main (String[] args) {
