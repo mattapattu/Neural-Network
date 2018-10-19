@@ -153,28 +153,7 @@ public class Neuroncluster {
 		}
 		return arr;
 
-		/*//For each graph, check if last neuron is activated
-		for(ArrayList<Integer> arraylist:arr) {
-
-			double currVal = 0;   
-
-			for(int i=0;i<(arraylist.size()-1);i++) {
-				DefaultWeightedEdge e = jgraph.getEdge(i, i+1);
-				double weight = jgraph.getEdgeWeight(e);
-
-				double act = input + currVal;
-
-			    // if act is less than threshold, there will be no output from neuron
-			    if(act < 2) {
-			      currVal = act;
-			    }
-			    else {
-
-			     currVal = 0;
-			    }
-
-
-			}*/
+		
 	}
 
 	public double getEdgeWeight(int sourceVertex,int targetVertex) {
