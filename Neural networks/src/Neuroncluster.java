@@ -96,7 +96,7 @@ public class Neuroncluster {
 		JGraphXAdapter<Integer, DefaultWeightedEdge> graphAdapter = 
 				new JGraphXAdapter<Integer, DefaultWeightedEdge>(jgraph);
 
-		mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
+		mxIGraphLayout layout = new mxCircleLayout(graphAdapter,2.00);
 		
 		layout.execute(graphAdapter.getDefaultParent());
 
@@ -167,7 +167,7 @@ public class Neuroncluster {
 		for(int k=0;k<noIncoming.size();k++) {
 			for(int m=0;m<noOutgoing.size();m++) {
 				try {
-					System.out.println("Finding graphs between vertices :"+noIncoming.get(k)+","+noOutgoing.get(m));
+					System.out.println("Finding paths between vertices :"+noIncoming.get(k)+","+noOutgoing.get(m));
 					List<GraphPath<Integer, DefaultWeightedEdge>> paths = getKshortestPaths(noIncoming.get(k),noOutgoing.get(m));
 					for(GraphPath i:paths) {
 						System.out.println(i.getVertexList().toString());
@@ -263,7 +263,7 @@ public class Neuroncluster {
 					}
 				}
 				if(graphActivated) {
-					System.out.println("Graph:"+arraylist.toString()+"is activated for "+ j+"th input" );
+					System.out.println("Path:"+arraylist.toString()+"is activated for "+ j+"th input" );
 				}
 
 			}
