@@ -39,7 +39,7 @@ public class Neuroncluster {
 	public List<Integer> tsort = new ArrayList<Integer>();
 
 
-	public Neuroncluster(int n) {
+	public Neuroncluster(int n, int numEdges) {
 		//Create network of n*n matrix
 		Supplier<Integer> vSupplier = new Supplier<Integer>()
 		{
@@ -69,7 +69,7 @@ public class Neuroncluster {
 
 		//		SimpleWeightedGraphMatrixGenerator<String, DefaultWeightedEdge> completeGenerator =
 		//	            new SimpleWeightedGraphMatrixGenerator();
-		GraphGenerator<Integer, DefaultWeightedEdge, Integer> gen = new GnmRandomGraphGenerator<>(n, n);
+		GraphGenerator<Integer, DefaultWeightedEdge, Integer> gen = new GnmRandomGraphGenerator<>(n, numEdges);
 
 
 
@@ -187,8 +187,8 @@ public class Neuroncluster {
 	// Use topological sort to determine activation path
 
 	public static void main(String[]args) {
-		Neuroncluster n = new Neuroncluster(5);
-		Neuron [] neurons = new Neuron[5];
+		Neuroncluster n = new Neuroncluster(10,20);
+		Neuron [] neurons = new Neuron[10];
 		for(int i=0;i<neurons.length;i++) {
 			neurons[i] = new Neuron();
 			neurons[i].neuronId=i;
@@ -197,7 +197,7 @@ public class Neuroncluster {
 
 
 		ArrayList<Float> input = new ArrayList<Float>();
-		ArrayList<Float> output = new ArrayList<Float>();
+//		ArrayList<Float> output = new ArrayList<Float>();
 
 		ArrayList<ArrayList<Integer>>graphs = n.getAllGraphs();
 
