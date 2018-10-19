@@ -179,7 +179,6 @@ public class Neuroncluster {
 
 
 
-	//select root node
 
 
 	//for every input,calculate the membrane potential of each node using the weights
