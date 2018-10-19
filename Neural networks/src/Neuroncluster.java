@@ -274,7 +274,7 @@ public class Neuroncluster {
 				Boolean graphActivated = false;
 				double weightOfPath = 0.0;
 
-				//For jth input, verify that last neuron of graph is activated
+				//For jth input, verify that last neuron of this graph is activated
 				for(int i=0;i<neuralpath.pathOfNeurons.size();i++) {
 					if(neuralpath.pathActivated) {
 						if(neurons[i].activation(r)) {

@@ -50,6 +50,12 @@ public class Neuron {
 	  }
   }
   
+  public void enableAllPaths() {
+	  for(Neuralpath n:neuralpaths) {
+			  n.pathActivated=true;
+	  }
+  }
+  
   /*public static void main (String[] args) {
     
     Neuron n = new Neuron();
